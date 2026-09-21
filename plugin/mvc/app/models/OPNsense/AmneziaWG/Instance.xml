@@ -90,22 +90,22 @@
                 <h1 type="TextField">
                     <Required>N</Required>
                     <mask>/^\d{1,10}(-\d{1,10})?$/</mask>
-                    <ValidationMessage>H1 must be a number or range (e.g. 12345 or 12345-67890), values 5-4294967295</ValidationMessage>
+                    <ValidationMessage>H1 must be 1 (header obfuscation off) or a number/range in 5-4294967295 (e.g. 12345 or 12345-67890)</ValidationMessage>
                 </h1>
                 <h2 type="TextField">
                     <Required>N</Required>
                     <mask>/^\d{1,10}(-\d{1,10})?$/</mask>
-                    <ValidationMessage>H2 must be a number or range (e.g. 12345 or 12345-67890), values 5-4294967295</ValidationMessage>
+                    <ValidationMessage>H2 must be 2 (header obfuscation off) or a number/range in 5-4294967295 (e.g. 12345 or 12345-67890)</ValidationMessage>
                 </h2>
                 <h3 type="TextField">
                     <Required>N</Required>
                     <mask>/^\d{1,10}(-\d{1,10})?$/</mask>
-                    <ValidationMessage>H3 must be a number or range (e.g. 12345 or 12345-67890), values 5-4294967295</ValidationMessage>
+                    <ValidationMessage>H3 must be 3 (header obfuscation off) or a number/range in 5-4294967295 (e.g. 12345 or 12345-67890)</ValidationMessage>
                 </h3>
                 <h4 type="TextField">
                     <Required>N</Required>
                     <mask>/^\d{1,10}(-\d{1,10})?$/</mask>
-                    <ValidationMessage>H4 must be a number or range (e.g. 12345 or 12345-67890), values 5-4294967295</ValidationMessage>
+                    <ValidationMessage>H4 must be 4 (header obfuscation off) or a number/range in 5-4294967295 (e.g. 12345 or 12345-67890)</ValidationMessage>
                 </h4>
                 <i1 type="TextField">
                     <Required>N</Required>

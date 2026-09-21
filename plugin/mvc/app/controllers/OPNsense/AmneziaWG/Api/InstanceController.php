@@ -20,6 +20,13 @@ class InstanceController extends ApiMutableModelControllerBase
     // the staleness threshold in amneziawg-testconnect.php)
     const HANDSHAKE_FRESH_SEC = 180;
 
+    // Canonical WireGuard message types. An unset Hx makes the driver fall back
+    // to these (wg_pkt_type_gen() returns the message type when min == 0), so a
+    // config carrying H1=1..H4=4 simply has header obfuscation switched off.
+    // Such values are accepted and then omitted from the .conf — the driver
+    // rejects them when set explicitly, since 0 already means "unset".
+    const H_DEFAULTS = ['h1' => 1, 'h2' => 2, 'h3' => 3, 'h4' => 4];
+
     /**
      * Search/list instances for the bootgrid.
      * Rows are enriched with a 'runtime' field (BACKLOG #3):
@@ -260,6 +267,8 @@ class InstanceController extends ApiMutableModelControllerBase
     /**
      * Validate H1-H4: format, value range and mutual non-overlap within
      * this instance (awg driver requirement). Returns validation map.
+     * A field left at its canonical default (see H_DEFAULTS) means header
+     * obfuscation is off and is treated the same as an empty field.
      */
     private function validateHFields(array $body, string $prefix): array
     {
@@ -277,8 +286,14 @@ class InstanceController extends ApiMutableModelControllerBase
             $parts = explode('-', $val, 2);
             $low  = (float)$parts[0];
             $high = isset($parts[1]) ? (float)$parts[1] : $low;
+            if ($low === $high && (int)$low === self::H_DEFAULTS[$hf]) {
+                // Header obfuscation off for this message type — not a range,
+                // so it takes no part in the overlap check below.
+                continue;
+            }
             if ($low < 5 || $high < 5 || $low > 4294967295 || $high > 4294967295) {
-                $validationErrors["{$prefix}.{$hf}"] = strtoupper($hf) . ' values must be in range 5-4294967295 (values 1-4 are reserved)';
+                $validationErrors["{$prefix}.{$hf}"] = strtoupper($hf) . ' must be ' . self::H_DEFAULTS[$hf]
+                    . ' (header obfuscation off) or a value in range 5-4294967295';
             } elseif ($high < $low) {
                 $validationErrors["{$prefix}.{$hf}"] = strtoupper($hf) . ' range start must not exceed range end';
             } else {

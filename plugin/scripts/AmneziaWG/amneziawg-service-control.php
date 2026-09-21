@@ -154,6 +154,11 @@ function awg_write_conf(array $inst): string
             'i1'=>'I1','i2'=>'I2','i3'=>'I3','i4'=>'I4','i5'=>'I5'];
     // Validate H1-H4: must be >= 5 and ranges must not overlap
     // Supports single values (e.g. "12345") and ranges (e.g. "12345-67890")
+    // A field left at its canonical WireGuard message type (H1=1..H4=4) means
+    // header obfuscation is off. The driver rejects those when set explicitly
+    // (0 already means "unset"), but an omitted Hx produces the very same
+    // on-the-wire header, so they are dropped silently rather than warned about.
+    $hDefaults = ['h1' => 1, 'h2' => 2, 'h3' => 3, 'h4' => 4];
     $hRanges = [];
     foreach (['h1','h2','h3','h4'] as $hk) {
         $raw = trim($inst[$hk] ?? '');
@@ -168,8 +173,13 @@ function awg_write_conf(array $inst): string
         $parts = explode('-', $raw, 2);
         $low  = (float)$parts[0];
         $high = isset($parts[1]) ? (float)$parts[1] : $low;
+        if ($low === $high && (int)$low === $hDefaults[$hk]) {
+            // Header obfuscation off — omitting the key is equivalent.
+            $inst[$hk] = '';
+            continue;
+        }
         if ($low < 5 || $high < 5 || $low > 4294967295 || $high > 4294967295 || $high < $low) {
-            awg_log("WARNING: {$hk}={$raw} is invalid (values must be 5-4294967295, start <= end). Skipping {$hk}.");
+            awg_log("WARNING: {$hk}={$raw} is invalid (must be {$hDefaults[$hk]} for no obfuscation, or 5-4294967295 with start <= end). Skipping {$hk}.");
             $inst[$hk] = '';
             continue;
         }
