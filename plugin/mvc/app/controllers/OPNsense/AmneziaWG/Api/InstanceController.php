@@ -117,6 +117,7 @@ class InstanceController extends ApiMutableModelControllerBase
 
         $validations = array_merge(
             $this->validateHFields($body, 'instance'),
+            $this->validateAWG3Fields($body, 'instance'),
             $this->validateInterfaceNumber($body, null)
         );
         if (!empty($validations)) {
@@ -158,6 +159,7 @@ class InstanceController extends ApiMutableModelControllerBase
 
         $validations = array_merge(
             $this->validateHFields($body, 'instance'),
+            $this->validateAWG3Fields($body, 'instance'),
             $this->validateInterfaceNumber($body, (string)$uuid)
         );
         if (!empty($validations)) {
@@ -309,6 +311,46 @@ class InstanceController extends ApiMutableModelControllerBase
             }
         }
         return $validationErrors;
+    }
+
+    /**
+     * Validate AWG3 ranges and the optional header protection key.
+     * Values are encoded as min-max ranges by the FreeBSD tools ABI.
+     */
+    private function validateAWG3Fields(array $body, string $prefix): array
+    {
+        $errors = [];
+        $headerKey = trim((string)($body['header_protection_key'] ?? ''));
+        if ($headerKey !== '') {
+            $decoded = base64_decode($headerKey, true);
+            if ($decoded === false || strlen($decoded) !== 32) {
+                $errors["{$prefix}.header_protection_key"] =
+                    'Header protection key must be a valid 32-byte Base64 key';
+            }
+        }
+        foreach ([
+            'content_padding_addition', 'rekey_after_time', 'rekey_timeout',
+            'reject_after_time', 'keepalive_timeout', 'max_handshake_attempts',
+            'peer_persistent_keepalive',
+        ] as $field) {
+            $value = trim((string)($body[$field] ?? ''));
+            if ($value === '') {
+                continue;
+            }
+            if (!preg_match('/^\d{1,5}(-\d{1,5})?$/', $value)) {
+                $errors["{$prefix}.{$field}"] =
+                    ucfirst(str_replace('_', ' ', $field)) . ' must be a number or range from 0 to 65535';
+                continue;
+            }
+            $parts = explode('-', $value, 2);
+            $min = (int)$parts[0];
+            $max = isset($parts[1]) ? (int)$parts[1] : $min;
+            if ($min > 65535 || $max > 65535 || $min > $max) {
+                $errors["{$prefix}.{$field}"] =
+                    ucfirst(str_replace('_', ' ', $field)) . ' range must be between 0 and 65535 with start <= end';
+            }
+        }
+        return $errors;
     }
 
     /**

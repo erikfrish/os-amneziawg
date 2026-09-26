@@ -244,6 +244,91 @@
     </field>
     <field>
         <type>header</type>
+        <label>AmneziaWG 3 Parameters</label>
+    </field>
+    <field>
+        <id>instance.header_protection_key</id>
+        <label>Header Protection Key</label>
+        <type>text</type>
+        <help>32-byte Base64 key. Required when the server profile uses AWG3 header protection.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.content_padding_addition</id>
+        <label>Content Padding Addition</label>
+        <type>text</type>
+        <help>AWG3 padding range in bytes, for example 2-10.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.rekey_after_time</id>
+        <label>Rekey After Time</label>
+        <type>text</type>
+        <help>AWG3 rekey interval in seconds or range, for example 110-120.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.rekey_timeout</id>
+        <label>Rekey Timeout</label>
+        <type>text</type>
+        <help>AWG3 handshake retry timeout in seconds or range.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.reject_after_time</id>
+        <label>Reject After Time</label>
+        <type>text</type>
+        <help>AWG3 peer rejection interval in seconds or range.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.keepalive_timeout</id>
+        <label>Keepalive Timeout</label>
+        <type>text</type>
+        <help>AWG3 keepalive timeout in seconds or range.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.max_handshake_attempts</id>
+        <label>Max Handshake Attempts</label>
+        <type>text</type>
+        <help>AWG3 maximum handshake attempts in a number or range.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.random_trailers</id>
+        <label>Random Trailers</label>
+        <type>checkbox</type>
+        <help>Enable AWG3 random transport trailers.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <id>instance.disable_cookies</id>
+        <label>Disable Cookies</label>
+        <type>checkbox</type>
+        <help>Disable AWG3 cookie replies when required by the server profile.</help>
+        <grid_view>
+            <ignore>true</ignore>
+        </grid_view>
+    </field>
+    <field>
+        <type>header</type>
         <label>Peer (Server)</label>
     </field>
     <field>
